@@ -47,16 +47,15 @@ const player = {
     { id: 1, name: 'Metal', songs: [1, 7, 4] },
     { id: 5, name: 'Israeli', songs: [4, 5] },
   ],
-  /*playSong(song) {
+  playSong(song) {
     const title = song.title, album = song.album, artist = song.artist;
     //minutes and seconds for duration required format.
-    let mins = Math.floor(song.duration/60); 
-    let secs = song.duration%60; 
-    console.log("Playing " + title + " from " + album + " by " + artist + " | " + mins + ":" + secs);
-  },*/
-  playSong(song) {
-    console.log(`Playing ${song.title} from ${song.album} by ${(song.artist)} | ${convertDuration(song.duration)}.`)
+    const dur = convertDuration(song.duration);
+    console.log("Playing " + title + " from " + album + " by " + artist + " | " + dur + ".");
   },
+  // playSong(song) {
+  //   console.log(`Playing ${song.title} from ${song.album} by ${(song.artist)} | ${convertDuration(song.duration)}.`)
+  // },
 }
 
 // player.playSong(player.songs[0])
@@ -245,8 +244,41 @@ function playlistDuration(id) {
 // console.log(playlistDuration(5));
 
 function searchByQuery(query) {
-  // your code here
+  let res = {
+    songs:[],
+    playlists:[]
+  };
+
+  for(const song of player.songs){//passes on all the songs
+    const vals = Object.values(song)
+    for(const val of vals){
+      if(typeof(val) === 'string'){
+        if(val.toLowerCase().includes(query.toLowerCase())){
+          res.songs.push(song);
+          break;
+        }
+      }
+    }
+  }
+
+  for(const pl of player.playlists){
+    if(pl.name.toLowerCase() === query.toLowerCase()){
+      res.playlists.push(pl);
+    }
+  }
+
+  res.songs.sort((s1,s2) => s1.title.localeCompare(s2.title));
+  res.playlists.sort((pl1,pl2) => pl1.name.localeCompare(pl2.name))
+
+  return res;
 }
+
+
+// addSong("Metal", "abc", "cde", "02:35");
+// addSong("bcd", "MeTal", "cde", "02:35");
+// addSong("abc","MeTal", "cde", "02:35");
+// addSong("cdc","cde", "MeTal", "02:35");
+// console.log(searchByQuery("ll"))
 
 function searchByDuration(duration) {
   let secs = parseInt(duration.slice(3));
