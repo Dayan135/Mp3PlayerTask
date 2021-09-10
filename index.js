@@ -47,15 +47,40 @@ const player = {
     { id: 1, name: 'Metal', songs: [1, 7, 4] },
     { id: 5, name: 'Israeli', songs: [4, 5] },
   ],
-  playSong(song) {
+  /*playSong(song) {
     const title = song.title, album = song.album, artist = song.artist;
     //minutes and seconds for duration required format.
     let mins = Math.floor(song.duration/60); 
     let secs = song.duration%60; 
     console.log("Playing " + title + " from " + album + " by " + artist + " | " + mins + ":" + secs);
+  },*/
+  playSong(song) {
+    console.log(`Playing ${song.title} from ${song.album} by ${(song.artist)} | ${convertDuration(song.duration)}.`)
   },
 }
 
+// player.playSong(player.songs[0])
+
+
+function convertDuration(duration) {
+  //converts duration format from seconds to 'mm:ss' and oposite
+  if(typeof(duration) === 'number'){
+    let min  = Math.floor(duration / 60);
+    let sec = duration % 60;
+
+    if (min < 10) {
+      min = "0" + String(min);
+    }
+    if (sec < 10) {
+      sec = "0" + String(sec);
+    }
+
+    return min + ':' + sec
+  }
+  else{//if its a string
+    return parseInt(duration.slice(3)) + parseInt(duration.slice(0,2)) * 60;
+  }
+}
 
 function generateID(arr, id){
   //gets an array and optional id. returns if it aviable or creates one.
@@ -74,8 +99,7 @@ function generateID(arr, id){
   }
   else{//if id has been given, checks if it already used.
     if(ids.includes(id)){
-      //TODO: throw an exxeption or something
-      return(-1)
+      throw(id + " id already exist!");
     }
   }
   return id;
@@ -83,13 +107,13 @@ function generateID(arr, id){
 
 function getEl(arr, id){
   //gets an array and id. return the object of the array that has the id.
-  //return null otherwise.
+  //throws exception otherwise.
   for(let el of arr){
     if(el.id === id){
       return el;
     }
   }
-  return null;
+  throw("couldn't find element where id=" + id);
 }
 //console.log(getEl(player.songs, 2))
 //player.playSong(player.songs[0]);
@@ -97,19 +121,13 @@ function getEl(arr, id){
 
 function playSong(id) {
   const song = getEl(player.songs,id);
-  if(!song){//if there is no such element
-    return;//TODO: throw exeptiuon
-  }
   player.playSong(song);
 }
 
-//playSong(1);
+// playSong(1);
 
 function removeSong(id) {
   let song2delete = getEl(player.songs,id);
-  if(!song2delete){
-    return;//TODO: throw exception
-  }
   const index = player.songs.indexOf(song2delete);
   player.songs.splice(index,1); //deletes the wanted song from the songs array.
 
@@ -130,15 +148,8 @@ function removeSong(id) {
 function addSong(title, album, artist, duration = "00:00", id) {
   //creates an array of all the songs id.
   id = generateID(player.songs, id);
-  //console.log(id);
-  if(id === -1){
-    return;
-    //TODO: throw exeption when id is not aviable.
-  }
 
-  let secs = parseInt(duration.slice(3));
-  let mins = parseInt(duration.slice(0,2));
-  duration = mins*60 + secs;
+  duration = convertDuration(duration);
 
   //TODO: find a better way to generate the object
   let newSong={
@@ -154,35 +165,21 @@ function addSong(title, album, artist, duration = "00:00", id) {
   return id;
 }
 
-//removeSong(1);
-//addSong("hello","almub","dayan","07:53", 1);
-//console.log(player);
+// removeSong(1);
+// addSong("hello","almub","dayan","07:53", 1);
+// console.log(player);
 
 function removePlaylist(id) {
   let pl = getEl(player.playlists, id);
-  if(!pl){
-    return;//TODO: throw exeption
-  }
   const index = player.playlists.indexOf(pl);
   player.playlists.splice(index,1);
-  // let i;
-  // for(i = 0; i < player.playlists.length; i++){
-  //   if(player.playlists[i].id === id){
-  //     player.playlists.splice(i,1);
-  //     return;
-  //   }
-  // }
 }
-/*
-removePlaylist(1)
-console.log(player)
-*/
+
+// removePlaylist(5)
+// console.log(player)
+
 function createPlaylist(name, id) {
   id = generateID(player.playlists, id);
-  if(id === -1){
-    return;
-    //TODO: throw exeption.
-  }
 
   player.playlists.push({
     id: id,
@@ -190,37 +187,82 @@ function createPlaylist(name, id) {
     songs: []
   });
 }
-/*
-createPlaylist("dayan", 1);
-console.log(player)
-*/
+
+// createPlaylist("dayan");
+// console.log(player)
+
 
 function playPlaylist(id) {
   const pl = getEl(player.playlists,id);
-  if(!pl){
-    return;//TODO: throw 
-  }
+  
   for(let i = 0; i < pl.songs.length; i++){
-    player.playSong(pl.songs[i])
+    player.playSong(getEl(player.songs, pl.songs[i]))
   }
 }
 
 // playPlaylist(1);
 
 function editPlaylist(playlistId, songId) {
-  // your code here
+  getEl(player.songs, songId)//if the song doesnt exist- throw exception
+  let pl = getEl(player.playlists,playlistId);
+  
+  const index = pl.songs.indexOf(songId);
+  if(index > -1){//if the song id exists in the playlist
+    if(pl.songs.length === 1){//if its the only song
+      removePlaylist(playlistId);
+    }
+    else{ 
+      pl.songs.splice(index,1);
+    }
+  }
+  else{
+    pl.songs.push(songId);
+  }
 }
 
+// editPlaylist(1,2)
+// editPlaylist(5,5)
+// editPlaylist(5,4);
+// console.log(player);
+
 function playlistDuration(id) {
-  // your code here
+  const pl = getEl(player.playlists,id);
+  if(!pl){
+    return//TODO: throw.
+  }
+  let dur = 0;
+  for(let songId of pl.songs){
+    dur += getEl(player.songs,songId).duration;
+  }
+  return dur;
 }
+
+// console.log(playlistDuration(1));
 
 function searchByQuery(query) {
   // your code here
 }
 
 function searchByDuration(duration) {
-  // your code here
+  let secs = parseInt(duration.slice(3));
+  let mins = parseInt(duration.slice(0,2));
+  duration = mins*60 + secs;
+
+  let el = player.songs[0];
+  let minDif = Math.abs(player.songs[0].duration - duration);
+  
+  let sub;
+  for(let song of player.songs){
+    sub = Math.abs(song.duration - duration)
+    if(sub < minDif){
+      minDif = sub;
+      el = song;
+    }
+  }
+
+  for(let pl of player.playlists){
+    playlistDuration(pl.id)
+  }
 }
 /*
 module.exports = {
