@@ -56,51 +56,16 @@ const player = {
   },
 }
 
-//player.playSong(player.songs[0]);
 
-function playSong(id) {
-  for(let song of player.songs){
-    if(song.id === id){
-      player.playSong(song)
-      return;
-    }
-    //else...
-  }
-}
-
-//playSong(5);
-
-function removeSong(id) {
-  let song2delete = null;
-  for(let song of player.songs){
-    if(song.id === id){
-      //search for the specific song objects that has the wanted id
-      song2delete = song;
-    }
-  }
-  if(song2delete){//if the wanted song (by id) had found
-    const index = player.songs.indexOf(song2delete);
-    player.songs.splice(index,1); //deletes the wanted song from the songs array.
-
-    for(const pl of player.playlists){
-      let songs = pl.songs;
-      const i = songs.indexOf(id);
-      if(i > -1){
-        songs.splice(i,1);
-      }
-    }
-  }
-}
-
-function addSong(title, album, artist, duration = "00:00", id) {
-  
-  //creates an array of all the songs id.
+function generateID(arr, id){
+  //gets an array and optional id. returns if it aviable or creates one.
+  //returns id if aviable. -1 otherwise.
   let ids = [];
-  for(let song of player.songs){
-    ids.push(song.id);
+  for(let cell of arr){
+    ids.push(cell.id);
   }
 
-  if(!id){//if id is undifined => optional!
+  if(!id){//if id is undifined (optional!) => creates new one
     let i = 1;
     while(ids.includes(i)){
       i++;
@@ -112,6 +77,63 @@ function addSong(title, album, artist, duration = "00:00", id) {
       //TODO: throw an exxeption or something
       return(-1)
     }
+  }
+  return id;
+}
+
+function getEl(arr, id){
+  //gets an array and id. return the object of the array that has the id.
+  //return null otherwise.
+  for(let el of arr){
+    if(el.id === id){
+      return el;
+    }
+  }
+  return null;
+}
+//console.log(getEl(player.songs, 2))
+//player.playSong(player.songs[0]);
+//console.log(generateID(player.playlists));
+
+function playSong(id) {
+  const song = getEl(player.songs,id);
+  if(!song){//if there is no such element
+    return;//TODO: throw exeptiuon
+  }
+  player.playSong(song);
+}
+
+//playSong(1);
+
+function removeSong(id) {
+  let song2delete = getEl(player.songs,id);
+  if(!song2delete){
+    return;//TODO: throw exception
+  }
+  const index = player.songs.indexOf(song2delete);
+  player.songs.splice(index,1); //deletes the wanted song from the songs array.
+
+  //searches and deletes the id of the song from all the playlists
+  for(const pl of player.playlists){
+    let songs = pl.songs;
+    const i = songs.indexOf(id);
+    if(i > -1){
+      songs.splice(i,1);
+    }
+  }
+}
+
+// removeSong(1);
+// console.log(player)
+
+
+function addSong(title, album, artist, duration = "00:00", id) {
+  //creates an array of all the songs id.
+  id = generateID(player.songs, id);
+  //console.log(id);
+  if(id === -1){
+    return;
+    //TODO: throw exeption when id is not aviable.
   }
 
   let secs = parseInt(duration.slice(3));
@@ -132,21 +154,58 @@ function addSong(title, album, artist, duration = "00:00", id) {
   return id;
 }
 
-/*removeSong(1);
-addSong("hello","almub","dayan","07:53", 1);
-console.log(player);*/
+//removeSong(1);
+//addSong("hello","almub","dayan","07:53", 1);
+//console.log(player);
 
 function removePlaylist(id) {
-  // your code here
+  let pl = getEl(player.playlists, id);
+  if(!pl){
+    return;//TODO: throw exeption
+  }
+  const index = player.playlists.indexOf(pl);
+  player.playlists.splice(index,1);
+  // let i;
+  // for(i = 0; i < player.playlists.length; i++){
+  //   if(player.playlists[i].id === id){
+  //     player.playlists.splice(i,1);
+  //     return;
+  //   }
+  // }
 }
-
+/*
+removePlaylist(1)
+console.log(player)
+*/
 function createPlaylist(name, id) {
-  // your code here
+  id = generateID(player.playlists, id);
+  if(id === -1){
+    return;
+    //TODO: throw exeption.
+  }
+
+  player.playlists.push({
+    id: id,
+    name: name,
+    songs: []
+  });
 }
+/*
+createPlaylist("dayan", 1);
+console.log(player)
+*/
 
 function playPlaylist(id) {
-  // your code here
+  const pl = getEl(player.playlists,id);
+  if(!pl){
+    return;//TODO: throw 
+  }
+  for(let i = 0; i < pl.songs.length; i++){
+    player.playSong(pl.songs[i])
+  }
 }
+
+// playPlaylist(1);
 
 function editPlaylist(playlistId, songId) {
   // your code here
