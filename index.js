@@ -186,9 +186,16 @@ function createPlaylist(name, id) {
     name: name,
     songs: []
   });
+
+  return id;
 }
 
-// createPlaylist("dayan");
+// createPlaylist("d1");
+// createPlaylist("d2");
+// createPlaylist("d3");
+// createPlaylist("d4");
+// createPlaylist("d5");
+// createPlaylist("d6");
 // console.log(player)
 
 
@@ -227,17 +234,15 @@ function editPlaylist(playlistId, songId) {
 
 function playlistDuration(id) {
   const pl = getEl(player.playlists,id);
-  if(!pl){
-    return//TODO: throw.
-  }
+
   let dur = 0;
   for(let songId of pl.songs){
-    dur += getEl(player.songs,songId).duration;
+    dur += getEl(player.songs, songId).duration;
   }
   return dur;
 }
 
-// console.log(playlistDuration(1));
+// console.log(playlistDuration(5));
 
 function searchByQuery(query) {
   // your code here
@@ -264,7 +269,7 @@ function searchByDuration(duration) {
     playlistDuration(pl.id)
   }
 }
-/*
+
 module.exports = {
   player,
   playSong,
@@ -278,4 +283,3 @@ module.exports = {
   searchByQuery,
   searchByDuration,
 }
-*/
