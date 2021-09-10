@@ -232,6 +232,7 @@ function editPlaylist(playlistId, songId) {
 // console.log(player);
 
 function playlistDuration(id) {
+  //gets playlist's id. returns his full duration.
   const pl = getEl(player.playlists,id);
 
   let dur = 0;
@@ -281,15 +282,13 @@ function searchByQuery(query) {
 // console.log(searchByQuery("ll"))
 
 function searchByDuration(duration) {
-  let secs = parseInt(duration.slice(3));
-  let mins = parseInt(duration.slice(0,2));
-  duration = mins*60 + secs;
+  duration = convertDuration(duration);
 
-  let el = player.songs[0];
-  let minDif = Math.abs(player.songs[0].duration - duration);
+  let el = player.songs[0]; //the element with the smallest difference from wanted duration.
+  let minDif = Math.abs(player.songs[0].duration - duration); //the smallest difference.
   
   let sub;
-  for(let song of player.songs){
+  for(let song of player.songs){//runs over the songs' duration.
     sub = Math.abs(song.duration - duration)
     if(sub < minDif){
       minDif = sub;
@@ -297,9 +296,14 @@ function searchByDuration(duration) {
     }
   }
 
-  for(let pl of player.playlists){
-    playlistDuration(pl.id)
+  for(let pl of player.playlists){//runs over the playlists' duration.
+    sub = Math.abs(playlistDuration(pl.id) - duration)
+    if(sub < minDif){
+      minDif = sub;
+      el = pl
+    }
   }
+  return el;
 }
 
 module.exports = {
