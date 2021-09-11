@@ -48,8 +48,9 @@ const player = {
     { id: 5, name: 'Israeli', songs: [4, 5] },
   ],
   playSong(song) {
+    //parameters - song (type object)
+    //prints the song details
     const title = song.title, album = song.album, artist = song.artist;
-    //minutes and seconds for duration required format.
     const dur = convertDuration(song.duration);
     console.log("Playing " + title + " from " + album + " by " + artist + " | " + dur + ".");
   },
@@ -62,18 +63,18 @@ const player = {
 
 
 function convertDuration(duration) {
-  //converts duration format from seconds to 'mm:ss' and oposite
+  //parameters - duration (type string('mm:ss') / number(seconds))
+  //return string('mm:ss') if number was given
+  //return number(seconds) if string was given
   if(typeof(duration) === 'number'){
     let min  = Math.floor(duration / 60);
     let sec = duration % 60;
-
     if (min < 10) {
       min = "0" + String(min);
     }
     if (sec < 10) {
       sec = "0" + String(sec);
     }
-
     return min + ':' + sec
   }
   else{//if its a string
@@ -82,9 +83,13 @@ function convertDuration(duration) {
 }
 
 function generateID(arr, id){
-  //gets an array and optional id. returns if it aviable or creates one.
-  //returns id if aviable. -1 otherwise.
-  let ids = [];
+  //parameters - arr (type array(of objects))
+  //             id (type number)(optional)
+  //if id is given - checks if it aviable id (if its not already used)
+  //if id isnt given - generate new id
+  //returns the id
+
+  let ids = [];//an array that includes all the ids of the objects in arr
   for(let cell of arr){
     ids.push(cell.id);
   }
@@ -105,8 +110,9 @@ function generateID(arr, id){
 }
 
 function getEl(arr, id){
-  //gets an array and id. return the object of the array that has the id.
-  //throws exception otherwise.
+  //parameters - arr (type array(of objects))
+  //             id (type number) (optional)
+  //returns the object in the array that has the wanted id.
   for(let el of arr){
     if(el.id === id){
       return el;
@@ -114,18 +120,17 @@ function getEl(arr, id){
   }
   throw("couldn't find element where id=" + id);
 }
-//console.log(getEl(player.songs, 2))
-//player.playSong(player.songs[0]);
-//console.log(generateID(player.playlists));
 
 function playSong(id) {
+  //parameters - id (type number)
+  //plays the song that has the wanted id
   const song = getEl(player.songs,id);
   player.playSong(song);
 }
 
-// playSong(1);
-
 function removeSong(id) {
+  //parameters - id (type number)
+  //removes the song with the wanted id(from songs array and from all the playlists)
   let song2delete = getEl(player.songs,id);
   const index = player.songs.indexOf(song2delete);
   player.songs.splice(index,1); //deletes the wanted song from the songs array.
@@ -140,16 +145,16 @@ function removeSong(id) {
   }
 }
 
-// removeSong(1);
-// console.log(player)
-
-
 function addSong(title, album, artist, duration = "00:00", id) {
-  //creates an array of all the songs id.
+  //parameters - title (type string)
+  //             album (type string)
+  //             artist (type string)
+  //             duration (type string)(format 'mm:ss')
+  //             id(type number)(optional)
+  //creates new song, add it to songs array.
+  //return his id
   id = generateID(player.songs, id);
-
   duration = convertDuration(duration);
-
   //TODO: find a better way to generate the object
   let newSong={
     id: id,
@@ -158,26 +163,23 @@ function addSong(title, album, artist, duration = "00:00", id) {
     artist: artist,
     duration: duration,
   }
-
   player.songs.push(newSong)
-
   return id;
 }
 
-// removeSong(1);
-// addSong("hello","almub","dayan","07:53", 1);
-// console.log(player);
-
 function removePlaylist(id) {
+  //parameters - id(type number)
+  //removes the playlist with the wanted id
   let pl = getEl(player.playlists, id);
   const index = player.playlists.indexOf(pl);
   player.playlists.splice(index,1);
 }
 
-// removePlaylist(5)
-// console.log(player)
-
 function createPlaylist(name, id) {
+  //parameters - name (type string)
+  //             id (type number)(optional)
+  //creates new playlist with the name and id, and with empty songs array.
+  //return the new plalist's id.
   id = generateID(player.playlists, id);
 
   player.playlists.push({
@@ -189,26 +191,21 @@ function createPlaylist(name, id) {
   return id;
 }
 
-// createPlaylist("d1");
-// createPlaylist("d2");
-// createPlaylist("d3");
-// createPlaylist("d4");
-// createPlaylist("d5");
-// createPlaylist("d6");
-// console.log(player)
-
-
 function playPlaylist(id) {
+  //parameters - id(type number)
+  //plays all the song from the playlist that has the wanted id.
   const pl = getEl(player.playlists,id);
-  
   for(let i = 0; i < pl.songs.length; i++){
     player.playSong(getEl(player.songs, pl.songs[i]))
   }
 }
 
-// playPlaylist(1);
-
 function editPlaylist(playlistId, songId) {
+  //parameters - playlistId(type number)
+  //             songId(type number)
+  //if song id exists in the playlist - remove it. 
+  //(if it was the last song - remove the whole playlist)
+  //if it doesnt exist - add it to the playlist
   getEl(player.songs, songId)//if the song doesnt exist- throw exception
   let pl = getEl(player.playlists,playlistId);
   
@@ -221,18 +218,14 @@ function editPlaylist(playlistId, songId) {
       pl.songs.splice(index,1);
     }
   }
-  else{
+  else{//if the song id doesnt exist in the playlist
     pl.songs.push(songId);
   }
 }
 
-// editPlaylist(1,2)
-// editPlaylist(5,5)
-// editPlaylist(5,4);
-// console.log(player);
-
 function playlistDuration(id) {
-  //gets playlist's id. returns his full duration.
+  //parameters - id(type number) 
+  //returns the full duration of all song of the wanted playlist.
   const pl = getEl(player.playlists,id);
 
   let dur = 0;
@@ -242,9 +235,11 @@ function playlistDuration(id) {
   return dur;
 }
 
-// console.log(playlistDuration(5));
-
 function searchByQuery(query) {
+  //parameters - query(type string)
+  //return object of songs array and plalists array (sorted).
+  //songs that their title/album/artist contains the query string.
+  //playlists that their name contains the query string.
   let res = {
     songs:[],
     playlists:[]
@@ -274,14 +269,9 @@ function searchByQuery(query) {
   return res;
 }
 
-
-// addSong("Metal", "abc", "cde", "02:35");
-// addSong("bcd", "MeTal", "cde", "02:35");
-// addSong("abc","MeTal", "cde", "02:35");
-// addSong("cdc","cde", "MeTal", "02:35");
-// console.log(searchByQuery("ll"))
-
 function searchByDuration(duration) {
+  //parameters - duration(type string)(format 'mm:ss')
+  //return the song/playlist that has the closest duration to the given duration.
   duration = convertDuration(duration);
 
   let el = player.songs[0]; //the element with the smallest difference from wanted duration.
