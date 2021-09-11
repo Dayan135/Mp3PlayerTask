@@ -105,7 +105,7 @@ function generateID(arr, id){
 
 function getEl(arr, id){
   //parameters - arr (type array(of objects))
-  //             id (type number) (optional)
+  //             id (type number)
   //returns the object in the array that has the wanted id.
   for(let el of arr){
     if(el.id === id){
