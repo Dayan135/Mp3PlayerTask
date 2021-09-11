@@ -69,7 +69,7 @@ function convertDuration(duration) {
     if (sec < 10) {
       sec = "0" + String(sec);
     }
-    return min + ':' + sec
+    return min + ':' + sec;
   }
   else{//if its a string
     return parseInt(duration.slice(3)) + parseInt(duration.slice(0,2)) * 60;
@@ -157,7 +157,7 @@ function addSong(title, album, artist, duration = "00:00", id) {
     artist: artist,
     duration: duration,
   }
-  player.songs.push(newSong)
+  player.songs.push(newSong);
   return id;
 }
 
@@ -190,7 +190,7 @@ function playPlaylist(id) {
   //plays all the song from the playlist that has the wanted id.
   const pl = getEl(player.playlists,id);
   for(let i = 0; i < pl.songs.length; i++){
-    player.playSong(getEl(player.songs, pl.songs[i]))
+    player.playSong(getEl(player.songs, pl.songs[i]));
   }
 }
 
@@ -240,7 +240,7 @@ function searchByQuery(query) {
   };
 
   for(const song of player.songs){//passes on all the songs
-    const vals = Object.values(song)
+    const vals = Object.values(song);
     for(const val of vals){
       if(typeof(val) === 'string'){
         if(val.toLowerCase().includes(query.toLowerCase())){
@@ -258,7 +258,7 @@ function searchByQuery(query) {
   }
 
   res.songs.sort((s1,s2) => s1.title.localeCompare(s2.title));
-  res.playlists.sort((pl1,pl2) => pl1.name.localeCompare(pl2.name))
+  res.playlists.sort((pl1,pl2) => pl1.name.localeCompare(pl2.name));
 
   return res;
 }
@@ -273,7 +273,7 @@ function searchByDuration(duration) {
   
   let sub;
   for(let song of player.songs){//runs over the songs' duration.
-    sub = Math.abs(song.duration - duration)
+    sub = Math.abs(song.duration - duration);
     if(sub < minDif){
       minDif = sub;
       el = song;
@@ -281,10 +281,10 @@ function searchByDuration(duration) {
   }
 
   for(let pl of player.playlists){//runs over the playlists' duration.
-    sub = Math.abs(playlistDuration(pl.id) - duration)
+    sub = Math.abs(playlistDuration(pl.id) - duration);
     if(sub < minDif){
       minDif = sub;
-      el = pl
+      el = pl;
     }
   }
   return el;
