@@ -53,14 +53,8 @@ const player = {
     const title = song.title, album = song.album, artist = song.artist;
     const dur = convertDuration(song.duration);
     console.log("Playing " + title + " from " + album + " by " + artist + " | " + dur + ".");
-  },
-  // playSong(song) {
-  //   console.log(`Playing ${song.title} from ${song.album} by ${(song.artist)} | ${convertDuration(song.duration)}.`)
-  // },
+  }
 }
-
-// player.playSong(player.songs[0])
-
 
 function convertDuration(duration) {
   //parameters - duration (type string('mm:ss') / number(seconds))
